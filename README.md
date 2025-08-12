@@ -12,9 +12,9 @@ src/
     └── sum_int.py        # MCP服务器实现，提供两个整数相加功能
 
 tests/
-├── test_sum_int.py           # 基础功能测试
-├── test_sum_int_by_llm.py    # 模拟LLM调用测试
-└── test_sum_int_with_real_llm.py  # 真实LLM调用测试
+├── test_sum_int.py                # 基础功能测试
+├── test_sum_int_with_real_llm.py  # 真实LLM调用测试
+└── test_sum_int_with_agent.py     # 使用LangChain Agent的测试
 ```
 
 ## 环境初始化
@@ -56,21 +56,15 @@ uv run mcp dev src/mcp_server/sum_int.py
 python src/mcp_server/sum_int.py
 ```
 
-## 执行测试
-
-### 基础功能测试
-```bash
-python tests/test_sum_int.py
-```
-
-### 模拟LLM调用测试
-```bash
-python tests/test_sum_int_by_llm.py
-```
 
 ### 真实LLM调用测试
 ```bash
 python tests/test_sum_int_with_real_llm.py
+```
+
+### 使用LangChain Agent的测试
+```bash
+python tests/test_sum_int_with_agent.py
 ```
 
 ## 依赖说明
@@ -82,3 +76,7 @@ python tests/test_sum_int_with_real_llm.py
 - `openai>=1.99.9` - OpenAI Python客户端
 - `python-dotenv>=1.0.1` - 环境变量加载工具
 - `httpx[socks]>=0.28.1` - HTTP客户端（支持SOCKS代理）
+- `langchain>=0.3.27` - LangChain核心库
+- `langchain-openai>=0.3.29` - LangChain的OpenAI集成
+- `langchain-mcp-adapters>=0.1.9` - LangChain与MCP的适配器
+- `langgraph>=0.6.4` - LangGraph库，用于构建agent工作流
