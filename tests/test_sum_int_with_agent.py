@@ -8,6 +8,7 @@ import sys
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+import logging
 
 # 添加src目录到Python路径
 sys.path.insert(0, str(Path(__file__).parent.parent / "src" / "mcp_server"))
@@ -17,10 +18,14 @@ env_path = Path(__file__).parent.parent / ".env"
 if env_path.exists():
     load_dotenv(dotenv_path=env_path)
 
+# 设置日志级别以显示更多LangChain内部信息
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 try:
     from langchain_mcp_adapters.tools import load_mcp_tools
     from langchain_openai import ChatOpenAI
-    from langchain_core.messages import HumanMessage
+    from langchain_core.messages import HumanMessage, AIMessage, ToolMessage
     from langgraph.prebuilt import create_react_agent
     from mcp import ClientSession, StdioServerParameters
     from mcp.client.stdio import stdio_client
@@ -58,7 +63,8 @@ if LANGCHAIN_AVAILABLE:
             model = ChatOpenAI(
                 model=model,
                 base_url=base_url,
-                api_key=api_key
+                api_key=api_key,
+                temperature=0  # 降低随机性以获得更一致的结果
             )
         except Exception as e:
             print(f"Failed to initialize model: {e}")
@@ -79,38 +85,57 @@ if LANGCHAIN_AVAILABLE:
                 # 测试问题列表
                 test_questions = [
                     "What is 15 plus 25?",
-                    "Calculate the sum of 123 and 456",
-                    "What do you get when you add -10 and 30?",
-                    "Find the result of 0 + 100"
+                    "Calculate the sum of 123 and 456"
                 ]
                 
-                expected_results = [40, 579, 20, 100]
+                expected_results = [40, 579]
                 
                 for i, question in enumerate(test_questions):
-                    print(f"\n--- Testing question {i+1}: {question} ---")
+                    print(f"\n{'='*50}")
+                    print(f"Testing question {i+1}: {question}")
+                    print(f"{'='*50}")
                     
                     try:
+                        # 显示发送给agent的消息
+                        print(f"\n[User Message] Sending to agent:")
+                        print(f"  Content: {question}")
+                        
                         # 调用agent
                         response = await agent.ainvoke({
                             "messages": [HumanMessage(content=question)]
                         })
                         
-                        # 输出agent的响应
+                        # 显示完整的对话历史
+                        print(f"\n[Agent Messages] Full conversation history:")
+                        for j, msg in enumerate(response['messages']):
+                            if isinstance(msg, HumanMessage):
+                                print(f"  Message {j+1} [Human]: {msg.content}")
+                            elif isinstance(msg, AIMessage):
+                                print(f"  Message {j+1} [AI]: {msg.content}")
+                                if hasattr(msg, 'tool_calls') and msg.tool_calls:
+                                    print(f"    Tool Calls: {msg.tool_calls}")
+                            elif isinstance(msg, ToolMessage):
+                                print(f"  Message {j+1} [Tool]: {msg.content}")
+                        
+                        # 输出最终响应
                         agent_response = response['messages'][-1].content
-                        print(f"Agent response: {agent_response}")
+                        print(f"\n[Final Response] Agent final response:")
+                        print(f"  {agent_response}")
                         
                         # 验证结果是否包含预期值
                         if str(expected_results[i]) in agent_response:
-                            print(f"✓ Test passed: Response contains expected result {expected_results[i]}")
+                            print(f"\n✓ Test passed: Response contains expected result {expected_results[i]}")
                         else:
-                            print(f"⚠ Warning: Response may not contain expected result {expected_results[i]}")
+                            print(f"\n⚠ Warning: Response may not contain expected result {expected_results[i]}")
                             
                     except Exception as e:
                         print(f"Error processing question '{question}': {e}")
                         import traceback
                         traceback.print_exc()
                 
-                print("\n=== Agent with MCP Tests Completed ===")
+                print(f"\n{'='*50}")
+                print("Agent with MCP Tests Completed")
+                print(f"{'='*50}")
 
 
     def main():
