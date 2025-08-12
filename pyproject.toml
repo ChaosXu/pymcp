@@ -1,0 +1,16 @@
+[project]
+name = "pymcp"
+version = "0.1.0"
+description = "A MCP Server"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "mcp[cli]>=1.12.4",
+]
+
+[project.optional-dependencies]
+test = [
+    "openai>=1.99.9",
+    "python-dotenv>=1.0.1",
+    "httpx[socks]>=0.28.1",
+]
