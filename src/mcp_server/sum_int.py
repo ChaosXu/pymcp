@@ -1,9 +1,11 @@
 from mcp.server.fastmcp import FastMCP
 import sys
 from typing import Literal, cast
+import os
 
-# 创建一个MCP服务器实例
-mcp = FastMCP("pymcp")
+# 创建一个MCP服务器实例，支持从环境变量获取端口配置
+mcp_port = int(os.environ.get("MCP_SERVER_PORT", "8000"))
+mcp = FastMCP("pymcp", port=mcp_port)
 
 
 # 添加一个加法工具，计算两个整数的和

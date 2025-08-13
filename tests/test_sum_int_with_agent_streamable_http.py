@@ -63,6 +63,7 @@ if LANGCHAIN_AVAILABLE:
         base_url = os.environ.get("LLM_BASE_URL")
         api_key = os.environ.get("LLM_API_KEY")
         model = os.environ.get("LLM_MODEL")
+        mcp_port = os.environ.get("MCP_SERVER_PORT", "8000")
         
         # 检查环境变量是否设置
         if not base_url:
@@ -79,7 +80,7 @@ if LANGCHAIN_AVAILABLE:
         ], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         
         # 等待服务器启动
-        server_url = "http://127.0.0.1:8000/mcp"
+        server_url = f"http://127.0.0.1:{mcp_port}/mcp"
         if not await wait_for_server(server_url):
             server_process.terminate()
             raise RuntimeError("MCP server failed to start within timeout")

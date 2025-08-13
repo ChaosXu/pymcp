@@ -32,19 +32,19 @@ uv pip install -e .
 uv pip install -e .[test]
 ```
 
-### 配置环境变量
-创建 `.env` 文件并配置LLM相关参数：
+### 环境变量配置
+
+复制 `.env.example` 文件并重命名为 `.env`，然后根据你的实际情况修改其中的值：
 
 ```bash
 cp .env.example .env
 ```
 
-编辑 `.env` 文件，添加以下内容：
-```
-LLM_BASE_URL=https://api.siliconflow.cn/v1
-LLM_API_KEY=your_api_key_here
-LLM_MODEL=Qwen/Qwen3-8B
-```
+环境变量说明：
+- `LLM_BASE_URL`：LLM API的基础URL
+- `LLM_API_KEY`：访问LLM API的密钥
+- `LLM_MODEL`：要使用的模型名称
+- `MCP_SERVER_PORT`：MCP服务器端口（默认为8000）
 
 ## 运行MCP服务器
 
