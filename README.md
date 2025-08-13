@@ -12,9 +12,11 @@ src/
     └── sum_int.py        # MCP服务器实现，提供两个整数相加功能
 
 tests/
-├── test_sum_int.py                # 基础功能测试
-├── test_sum_int_with_real_llm.py  # 真实LLM调用测试
-└── test_sum_int_with_agent.py     # 使用LangChain Agent的测试
+├── test_sum_int.py                                # 基础功能测试
+├── test_sum_int_with_real_llm.py                  # 真实LLM调用测试
+├── test_sum_int_with_agent.py                     # 使用LangChain Agent的测试 (stdio方式)
+├── test_sum_int_with_agent_sse.py                 # 使用LangChain Agent的测试 (SSE方式)
+└── test_sum_int_with_agent_streamable_http.py     # 使用LangChain Agent的测试 (Streamable HTTP方式)
 ```
 
 ## 环境初始化
@@ -46,25 +48,61 @@ LLM_MODEL=Qwen/Qwen3-8B
 
 ## 运行MCP服务器
 
+MCP服务器支持多种传输方式：
+
+### stdio方式（默认）
 ```bash
-# 运行MCP服务器
+# 运行MCP服务器（stdio方式）
 uv run mcp dev src/mcp_server/sum_int.py
-```
 
-或者直接运行：
-```bash
+# 或者直接运行
 python src/mcp_server/sum_int.py
+
+# 或者显式指定stdio方式
+python src/mcp_server/sum_int.py stdio
 ```
 
+### SSE方式
+```bash
+# 使用SSE方式运行
+python src/mcp_server/sum_int.py sse
+```
+
+服务器将在 http://127.0.0.1:8000 启动
+
+### Streamable HTTP方式
+```bash
+# 使用Streamable HTTP方式运行
+python src/mcp_server/sum_int.py streamable-http
+```
+
+服务器将在 http://127.0.0.1:8000 启动
+
+## 执行测试
+
+### 基础功能测试
+```bash
+python tests/test_sum_int.py
+```
 
 ### 真实LLM调用测试
 ```bash
 python tests/test_sum_int_with_real_llm.py
 ```
 
-### 使用LangChain Agent的测试
+### 使用LangChain Agent的测试 (stdio方式)
 ```bash
 python tests/test_sum_int_with_agent.py
+```
+
+### 使用LangChain Agent的测试 (SSE方式)
+```bash
+python tests/test_sum_int_with_agent_sse.py
+```
+
+### 使用LangChain Agent的测试 (Streamable HTTP方式)
+```bash
+python tests/test_sum_int_with_agent_streamable_http.py
 ```
 
 ## 依赖说明
